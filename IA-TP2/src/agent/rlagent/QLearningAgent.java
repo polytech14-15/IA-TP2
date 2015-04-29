@@ -32,7 +32,6 @@ public class QLearningAgent extends RLAgent{
 		//VOTRE CODE
 		QValeur = new HashMap<>();
                 reset();
-	
 	}
 
 
@@ -97,11 +96,8 @@ public class QLearningAgent extends RLAgent{
                         t_min = Math.min(t_min, n);
                         t_max = Math.max(t_max, n);
                     }
-                        
                 }
-		
 		this.notifyObs();
-		
 	}
 	
 	
@@ -117,8 +113,9 @@ public class QLearningAgent extends RLAgent{
 	@Override
 	public void endStep(Etat e, Action a, Etat esuivant, double reward) {
 		//VOTRE CODE
-            
 		// calcul se trouvant diapo 38 cours
+            Double result = (1 - super.alpha) * this.QValeur.get(e).get(a) + super.alpha * (reward + super.gamma * this.getValeur(e));
+            this.QValeur.get(e).put(a, result);
             
 	}
 
@@ -135,7 +132,6 @@ public class QLearningAgent extends RLAgent{
 	public void reset() {
 		this.episodeNb =0;
 		//VOTRE CODE
-		//...
 		this.QValeur.clear();
 	}
 
