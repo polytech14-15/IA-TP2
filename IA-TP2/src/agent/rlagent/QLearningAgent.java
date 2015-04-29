@@ -9,6 +9,7 @@ import environnement.Environnement;
 import environnement.Etat;
 import environnement.gridworld.ActionGridworld;
 import environnement.gridworld.EtatGrille;
+import java.util.Map;
 /**
  * 
  * @author laetitiamatignon
@@ -16,7 +17,8 @@ import environnement.gridworld.EtatGrille;
  */
 public class QLearningAgent extends RLAgent{
 	//VOTRE CODE
-	//...
+	
+        Map<Etat, Map<Action,Double>> QValeur;
 	
 	/**
 	 * 
@@ -28,7 +30,8 @@ public class QLearningAgent extends RLAgent{
 			Environnement _env) {
 		super(alpha, gamma,_env);
 		//VOTRE CODE
-		//...
+		QValeur = new HashMap<>();
+                reset();
 	
 	}
 
@@ -54,10 +57,16 @@ public class QLearningAgent extends RLAgent{
 	 */
 	@Override
 	public double getValeur(Etat e) {
-		//VOTRE CODE
-		//...
-		return 0.0;
-		
+            //VOTRE CODE
+            // c'est un max sur les action
+            double max = - Double.MAX_VALUE;
+            List <Action> actions = this.getActionsLegales(e);
+            for (Action a : actions){
+                if (max < this.getQValeur(e, a)){
+                    max = this.getQValeur(e, a);
+                }
+            }
+            return max;
 	}
 
 	/**
@@ -69,8 +78,7 @@ public class QLearningAgent extends RLAgent{
 	@Override
 	public double getQValeur(Etat e, Action a) {
 		//VOTRE CODE
-		//...
-		return 0.0;
+		return this.QValeur.get(e).get(a);
 	}
 	
 	/**
@@ -79,9 +87,8 @@ public class QLearningAgent extends RLAgent{
 	@Override
 	public void setQValeur(Etat e, Action a, double d) {
 		//VOTRE CODE
-		//...
-		
-		
+		this.QValeur.get(e).put(a, d);
+                // TODO
 		//mise a jour vmin et vmax pour affichage gradient de couleur
 		//...
 		
@@ -102,7 +109,8 @@ public class QLearningAgent extends RLAgent{
 	@Override
 	public void endStep(Etat e, Action a, Etat esuivant, double reward) {
 		//VOTRE CODE
-		//...
+            
+		// calcul se trouvant diapo 38 cours
 	}
 
 	@Override
