@@ -90,7 +90,15 @@ public class QLearningAgent extends RLAgent{
 		this.QValeur.get(e).put(a, d);
                 // TODO
 		//mise a jour vmin et vmax pour affichage gradient de couleur
-		//...
+                Double t_min = Double.MAX_VALUE;
+                Double t_max = -Double.MAX_VALUE;
+		for (Etat etat : this.QValeur.keySet()){
+                    for (Double n : this.QValeur.get(etat).values()){
+                        t_min = Math.min(t_min, n);
+                        t_max = Math.max(t_max, n);
+                    }
+                        
+                }
 		
 		this.notifyObs();
 		
@@ -111,6 +119,7 @@ public class QLearningAgent extends RLAgent{
 		//VOTRE CODE
             
 		// calcul se trouvant diapo 38 cours
+            
 	}
 
 	@Override
@@ -127,7 +136,7 @@ public class QLearningAgent extends RLAgent{
 		this.episodeNb =0;
 		//VOTRE CODE
 		//...
-		
+		this.QValeur.clear();
 	}
 
 
