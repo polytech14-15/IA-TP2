@@ -77,6 +77,7 @@ public class QLearningAgent extends RLAgent{
 	@Override
 	public double getQValeur(Etat e, Action a) {
 		//VOTRE CODE
+            // TODO verrifier contains sinon renvoyer 0
 		return this.QValeur.get(e).get(a);
 	}
 	
