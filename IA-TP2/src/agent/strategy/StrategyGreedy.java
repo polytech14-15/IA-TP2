@@ -20,8 +20,6 @@ public class StrategyGreedy extends StrategyExploration{
 
     private Random rand=new Random();
 
-
-
     public StrategyGreedy(RLAgent agent,double epsilon) {
         super(agent);
         //VOTRE CODE

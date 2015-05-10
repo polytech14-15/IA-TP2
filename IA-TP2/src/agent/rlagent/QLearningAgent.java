@@ -61,7 +61,7 @@ public class QLearningAgent extends RLAgent{
 	@Override
 	public double getValeur(Etat e) {
             //VOTRE CODE
-            // c'est un max sur les actions
+            // c'est un max sur les actions possibles
             double max = - Double.MAX_VALUE;
             for (Action a : this.getActionsLegales(e)){
                 max = Math.max(max, this.getQValeur(e, a));
@@ -124,7 +124,8 @@ public class QLearningAgent extends RLAgent{
 	@Override
 	public void endStep(Etat e, Action a, Etat esuivant, double reward) {
 		//VOTRE CODE
-		// calcul se trouvant diapo 38 cours
+            // Nous voulions verifier dans un premier temps que l'etat est non terminal mais ça ne marchait pas
+            // donc on verifie si l'action est EXIT puisque c'est la seule action des etats terminaux
             if (a != ActionGridworld.EXIT){
                 Double result = (1 - super.alpha) * this.getQValeur(e, a) + super.alpha * (reward + super.gamma * this.getValeur(esuivant));
                 this.setQValeur(e, a, result);
