@@ -28,10 +28,10 @@ public class QLearningAgent extends RLAgent{
 	 */
 	public QLearningAgent(double alpha, double gamma,
 			Environnement _env) {
-		super(alpha, gamma,_env);
-		//VOTRE CODE
-		QValeur = new HashMap<>();
-                reset();
+            super(alpha, gamma,_env);
+            //VOTRE CODE
+            QValeur = new HashMap<>();
+            reset();
 	}
 
 
@@ -45,10 +45,14 @@ public class QLearningAgent extends RLAgent{
 	@Override
 	public List<Action> getPolitique(Etat e) {
 		//VOTRE CODE
-		//...
-		return null;
-		
-		
+            List<Action> listActions = new ArrayList<>();
+            Double max = this.getValeur(e);
+            for ( Action a : this.getActionsLegales(e)){
+                if (this.getQValeur(e, a) == max){
+                    listActions.add(a);
+                }
+            }
+            return listActions;
 	}
 	
 	/**
@@ -57,13 +61,10 @@ public class QLearningAgent extends RLAgent{
 	@Override
 	public double getValeur(Etat e) {
             //VOTRE CODE
-            // c'est un max sur les action
+            // c'est un max sur les actions
             double max = - Double.MAX_VALUE;
-            List <Action> actions = this.getActionsLegales(e);
-            for (Action a : actions){
-                if (max < this.getQValeur(e, a)){
-                    max = this.getQValeur(e, a);
-                }
+            for (Action a : this.getActionsLegales(e)){
+                max = Math.max(max, this.getQValeur(e, a));
             }
             return max;
 	}
@@ -77,8 +78,7 @@ public class QLearningAgent extends RLAgent{
 	@Override
 	public double getQValeur(Etat e, Action a) {
 		//VOTRE CODE
-            // TODO verrifier contains sinon renvoyer 0
-		return this.QValeur.get(e).get(a);
+		return this.QValeur.containsKey(e) && this.QValeur.get(e).containsKey(a) ? this.QValeur.get(e).get(a) : 0.0;
 	}
 	
 	/**
@@ -86,19 +86,29 @@ public class QLearningAgent extends RLAgent{
 	 */
 	@Override
 	public void setQValeur(Etat e, Action a, double d) {
-		//VOTRE CODE
-		this.QValeur.get(e).put(a, d);
-                // TODO
-		//mise a jour vmin et vmax pour affichage gradient de couleur
-                Double t_min = Double.MAX_VALUE;
-                Double t_max = -Double.MAX_VALUE;
-		for (Etat etat : this.QValeur.keySet()){
-                    for (Double n : this.QValeur.get(etat).values()){
-                        t_min = Math.min(t_min, n);
-                        t_max = Math.max(t_max, n);
-                    }
+            //VOTRE CODE
+            if (this.QValeur.containsKey(e)){
+                this.QValeur.get(e).put(a, d);
+            } else {
+                Map<Action, Double> map = new HashMap<>();
+                map.put(a, d);
+                this.QValeur.put(e, map);
+            }
+            
+            //mise a jour vmin et vmax pour affichage gradient de couleur
+            Double t_min = Double.MAX_VALUE;
+            Double t_max = -Double.MAX_VALUE;
+            for (Etat etat : this.QValeur.keySet()){
+                for (Double n : this.QValeur.get(etat).values()){
+                    t_min = Math.min(t_min, n);
+                    t_max = Math.max(t_max, n);
                 }
-		this.notifyObs();
+            }
+
+            super.vmax = t_max;
+            super.vmin = t_min;
+        
+            this.notifyObs();
 	}
 	
 	
@@ -115,15 +125,16 @@ public class QLearningAgent extends RLAgent{
 	public void endStep(Etat e, Action a, Etat esuivant, double reward) {
 		//VOTRE CODE
 		// calcul se trouvant diapo 38 cours
-            Double result = (1 - super.alpha) * this.QValeur.get(e).get(a) + super.alpha * (reward + super.gamma * this.getValeur(e));
-            this.QValeur.get(e).put(a, result);
-            
+            if (a != ActionGridworld.EXIT){
+                Double result = (1 - super.alpha) * this.getQValeur(e, a) + super.alpha * (reward + super.gamma * this.getValeur(esuivant));
+                this.setQValeur(e, a, result);
+            }
 	}
 
 	@Override
 	public Action getAction(Etat e) {
-		this.actionChoisie = this.stratExplorationCourante.getAction(e);
-		return this.actionChoisie;
+            this.actionChoisie = this.stratExplorationCourante.getAction(e);
+            return this.actionChoisie;
 	}
 
 	/**
@@ -131,9 +142,11 @@ public class QLearningAgent extends RLAgent{
 	 */
 	@Override
 	public void reset() {
-		this.episodeNb =0;
-		//VOTRE CODE
-		this.QValeur.clear();
+            this.episodeNb =0;
+            //VOTRE CODE
+            this.QValeur.clear();
+            super.vmax = - Double.MAX_VALUE;
+            super.vmin = Double.MAX_VALUE;
 	}
 
 
